@@ -1,0 +1,61 @@
+import express, { Application, Request } from "express"
+import cors from "cors"
+import { appRoute } from "./interfaces/route.interface"
+import errorMiddleware from './middlewares/error.middleware'
+import morganMiddleware from './middlewares/morgan.middleware'
+import database from "./database"
+import { logger } from './utils/logger'
+import { PORT } from "./config"
+import { StatusCodes } from "http-status-codes"
+
+export default class App  {
+
+  private app: Application
+  private port: number | string
+  private database: typeof database
+
+  constructor(routes: appRoute[]) {
+    this.app = express()
+    this.port = PORT || 3000
+    this.database = database
+    this.initializeMiddlewares()
+    this.initializeRoutes(routes)
+    this.initializeDatabase()
+    this.initializeErrorHandling()
+  }
+
+  public listen(): void {
+    this.app.listen(this.port, () => {
+      logger.info(`⚡️[server]: Server is running @ http://localhost:${this.port}`)
+    })
+  }
+
+  private initializeMiddlewares(): void {
+    this.app.use(express.json())
+    this.app.use(cors<Request>())
+    this.app.use(express.urlencoded({ extended: true }))
+    this.app.use(morganMiddleware)
+  }
+
+  private initializeRoutes(routes: appRoute[]): void {
+    this.app.get('/', (req, res) => res.status(StatusCodes.OK).send("Chap backend 😁"))
+    routes.forEach(route => {
+      this.app.use(`/v1${route.path}`, route.router)
+    })
+  }
+
+  private async initializeDatabase(): Promise<void>{
+    try {
+      await this.database.connect()
+      logger.info(`🛢️ [Database]: Database connected`)
+    } catch (error) {
+      logger.error(`🛢️ [Database]: Database connection failed`)
+      console.log(error)
+    }
+  }
+
+  private initializeErrorHandling() {
+    this.app.use(errorMiddleware)
+  }
+
+}
