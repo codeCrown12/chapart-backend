@@ -23,7 +23,6 @@ model User {
   bio String?
   profile_image String?
   bookmarks String[]
-  exhibit String[]
   password String
   wallet_balance Int @default(0)
   is_artist Boolean @default(false)
@@ -47,6 +46,7 @@ model Art {
   specifications String[]
   is_signed Boolean @default(false)
   is_available_for_sale Boolean @default(false)
+  is_for_exhibition Boolean @default(false)
   orders Order[]
   date DateTime @default(now())
 }
