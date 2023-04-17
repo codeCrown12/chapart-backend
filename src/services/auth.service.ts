@@ -8,7 +8,9 @@ import LoginDto from "../dtos/login.dto"
 import jwt, { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken"
 import { JWT_SECRET, JWT_EXPIRES_IN } from "../config"
 import emailService from "./email.service"
-import VerifyEmailDto from "../dtos/verifyEmail.dto"
+import SendOtpDto from "../dtos/sendOtp.dto"
+import VerifyOtpDto from "../dtos/verifyOtp.dto"
+import ChangePasswordDto from "../dtos/changePassword.dto"
 
 
 export default class AuthService {
@@ -60,11 +62,11 @@ export default class AuthService {
             bio
         } = user
         const message : string = `
-        <p>Hello chap, </p>
-        Please verify your account with the otp below
+        <p>Welcome ${firstname.toUpperCase()}, </p>
+        <p>Please verify your account with the otp below</p>
         <b>${token}</b>`
         await emailService.sendEmail(signUpDto.email.toLowerCase(), "Verify email", message)
-        return {
+        return { user: {
             email,
             username, 
             firstname, 
@@ -77,7 +79,7 @@ export default class AuthService {
             bookmarks, 
             profile_image,
             bio
-        }
+        } }
     }
 
 
@@ -90,6 +92,10 @@ export default class AuthService {
         
         if(!user) {
             throw new HttpException(StatusCodes.BAD_REQUEST, "Invalid credentials")
+        }
+
+        if(user.is_banned) {
+            throw new HttpException(StatusCodes.BAD_REQUEST, "Access denied")
         }
 
         const passwordIsValid = await this.verifyPassword(user.password, loginDto.password)
@@ -134,10 +140,37 @@ export default class AuthService {
     }
 
 
-    public async verifyOTP(verifyEmailDto: VerifyEmailDto) {
+    public async sendOTP (sendOtpDto: SendOtpDto) {
         const user = await this.dbService.user.findFirst({
             where: {
-                email: verifyEmailDto.email,
+                email: sendOtpDto.email.toLowerCase()
+            }
+        })
+        if(!user) {
+            throw new HttpException(StatusCodes.BAD_REQUEST, "Email not registered")
+        }
+        const token = this.generateToken()
+        await this.dbService.user.update({
+            where: {
+                email: sendOtpDto.email.toLowerCase()
+            },
+            data: {
+                verification_pin: token
+            }
+        })
+        const message : string = `
+        <p>Hello chap, </p>
+        <p>Here's your one time token below</p>
+        <b>${token}</b>`
+        await emailService.sendEmail(sendOtpDto.email.toLowerCase(), "Verify email", message)
+        return { msg: "Token sent"}
+    }
+
+
+    public async verifyOtp(verifyEmailDto: VerifyOtpDto) {
+        const user = await this.dbService.user.findFirst({
+            where: {
+                email: verifyEmailDto.email.toLowerCase(),
                 verification_pin: verifyEmailDto.token
             }
         })
@@ -148,7 +181,7 @@ export default class AuthService {
         if(!user.email_verified) {
             await this.dbService.user.update({
                 where: {
-                    email: verifyEmailDto.email
+                    email: verifyEmailDto.email.toLowerCase()
                 },
                 data: {
                     email_verified: true,
@@ -159,7 +192,7 @@ export default class AuthService {
         }
         await this.dbService.user.update({
             where: {
-                email: verifyEmailDto.email
+                email: verifyEmailDto.email.toLowerCase()
             },
             data: {
                 verification_pin: token
@@ -169,13 +202,38 @@ export default class AuthService {
     }
 
 
+    public async changePassword(changePasswordDto: ChangePasswordDto) {
+        const user = await this.dbService.user.findFirst({
+            where: {
+                email: changePasswordDto.email.toLowerCase(),
+                verification_pin: changePasswordDto.token
+            }
+        })
+        if(!user) {
+            throw new HttpException(StatusCodes.BAD_REQUEST, "Invalid token or email")
+        }
+        const hashedPassword = await this.hashPassword(changePasswordDto.password)
+        const token = this.generateToken()
+        await this.dbService.user.update({
+            where: {
+                email: changePasswordDto.email.toLowerCase()
+            },
+            data: {
+                password: hashedPassword,
+                verification_pin: token
+            }
+        })
+        return { msg: "Password updated"}
+    }
+
+
     private async hashPassword(password: string) {
         const salt = await bcrypt.genSalt(10)
         return await bcrypt.hash(password, salt)
     }
 
 
-    private async verifyPassword(passwordFromDb: string, loginPassword: string): Promise<boolean> {
+    private async verifyPassword(passwordFromDb: string, loginPassword: string) {
         return await bcrypt.compare(loginPassword, passwordFromDb)
     }
 
@@ -202,7 +260,7 @@ export default class AuthService {
         }
     }
 
-    public generateToken(length: number = 8) {
+    public generateToken(length: number = 6) {
         let chars = '0123456789';
         let token = '';
         for (let i = 0; i < length; i++) {

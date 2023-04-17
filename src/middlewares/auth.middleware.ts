@@ -1,16 +1,11 @@
 import { NextFunction, Request, Response, RequestHandler } from "express"
 import HttpException from "../utils/exception"
-import { User } from "@prisma/client"
 import database from "../database"
 import AuthService from "../services/auth.service"
 import { StatusCodes } from "http-status-codes"
 
-interface AuthRequest extends Request {
-    user: User | null
-}
-
-const authMiddleware = async (
-    req: AuthRequest,
+const authMiddleware: RequestHandler = async (
+    req: Request,
     res: Response,
     next: NextFunction
 ) => {
@@ -40,7 +35,6 @@ const authMiddleware = async (
                 id: userPayload.id
             }
         })
-
         
         req.user = user
 

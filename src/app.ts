@@ -1,6 +1,6 @@
 import express, { Application, Request } from "express"
 import cors from "cors"
-import { appRoute } from "./interfaces/route.interface"
+import { AppRoute } from "./interfaces/route.interface"
 import errorMiddleware from './middlewares/error.middleware'
 import morganMiddleware from './middlewares/morgan.middleware'
 import database from "./database"
@@ -14,7 +14,7 @@ export default class App  {
   private port: number | string
   private database: typeof database
 
-  constructor(routes: appRoute[]) {
+  constructor(routes: AppRoute[]) {
     this.app = express()
     this.port = PORT || 3000
     this.database = database
@@ -37,8 +37,8 @@ export default class App  {
     this.app.use(morganMiddleware)
   }
 
-  private initializeRoutes(routes: appRoute[]): void {
-    this.app.get('/', (req, res) => res.status(StatusCodes.OK).send("Chap backend 😁"))
+  private initializeRoutes(routes: AppRoute[]): void {
+    this.app.get('/', (req, res) => res.status(StatusCodes.OK).send("Chap art backend 😁"))
     routes.forEach(route => {
       this.app.use(`/v1${route.path}`, route.router)
     })

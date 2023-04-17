@@ -1,12 +1,14 @@
 import { Router } from "express"
 import AuthController from "../controllers/auth.controller"
-import { appRoute } from "../interfaces/route.interface"
+import { AppRoute } from "../interfaces/route.interface"
 import dtoValidationMiddleware from "../middlewares/validation.middleware"
 import SignUpDto from "../dtos/signup.dto"
 import LoginDto from "../dtos/login.dto"
-import VerifyEmailDto from "../dtos/verifyEmail.dto"
+import VerifyOtpDto from "../dtos/verifyOtp.dto"
+import SendOtpDto from "../dtos/sendOtp.dto"
+import ChangePasswordDto from "../dtos/changePassword.dto"
 
-class AuthRoute implements appRoute {
+export default class AuthRoute implements AppRoute {
     public path: string = '/auth'
     public router: Router = Router()
     private controller: AuthController = new AuthController()
@@ -30,12 +32,22 @@ class AuthRoute implements appRoute {
         )
 
         this.router.post(
+            '/get_token',
+            dtoValidationMiddleware(SendOtpDto, "body"),
+            this.controller.sendOtp
+        )
+
+        this.router.post(
             '/verify_token',
-            dtoValidationMiddleware(VerifyEmailDto, "body"),
-            this.controller.verifyEmail
+            dtoValidationMiddleware(VerifyOtpDto, "body"),
+            this.controller.verifyOtp
+        )
+
+        this.router.put(
+            '/change_password',
+            dtoValidationMiddleware(ChangePasswordDto, "body"),
+            this.controller.changePassword
         )
 
     }
 }
-
-export default AuthRoute

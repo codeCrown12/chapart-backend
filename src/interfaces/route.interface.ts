@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-export interface appRoute {
+export interface AppRoute {
     path?: string,
     router: Router
 }

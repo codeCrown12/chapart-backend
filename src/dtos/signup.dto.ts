@@ -14,8 +14,8 @@ export default class SignUpDto {
     @IsNotEmpty()
     username: string
 
-    @IsNotEmpty()
     @IsEmail()
+    @IsNotEmpty()
     email: string
     
     @IsString()
