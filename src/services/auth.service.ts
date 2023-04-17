@@ -1,16 +1,16 @@
 import * as bcrypt from "bcrypt"
 import { PrismaClient } from "@prisma/client"
 import database from "../database"
-import SignUpDto from "../dtos/signup.dto"
+import SignUpDto from "../dtos/auth/signup.dto"
 import { StatusCodes } from "http-status-codes"
 import HttpException from "../utils/exception"
-import LoginDto from "../dtos/login.dto"
+import LoginDto from "../dtos/auth/login.dto"
 import jwt, { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken"
 import { JWT_SECRET, JWT_EXPIRES_IN } from "../config"
 import emailService from "./email.service"
-import SendOtpDto from "../dtos/sendOtp.dto"
-import VerifyOtpDto from "../dtos/verifyOtp.dto"
-import ChangePasswordDto from "../dtos/changePassword.dto"
+import SendOtpDto from "../dtos/auth/sendOtp.dto"
+import VerifyOtpDto from "../dtos/auth/verifyOtp.dto"
+import ChangePasswordDto from "../dtos/auth/changePassword.dto"
 
 
 export default class AuthService {

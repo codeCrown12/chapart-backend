@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client"
 import database from "../database"
 import { StatusCodes } from "http-status-codes"
 import HttpException from "../utils/exception"
-import UpdateProfileDto from "../dtos/updateProfile.dto"
+import UpdateProfileDto from "../dtos/user/updateProfile.dto"
 
 export default class UserService {
     

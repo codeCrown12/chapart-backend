@@ -3,7 +3,7 @@ import UserController from "../controllers/user.controller"
 import { AppRoute } from "../interfaces/route.interface"
 import dtoValidationMiddleware from "../middlewares/validation.middleware"
 import authMiddleware from "../middlewares/auth.middleware"
-import UpdateProfileDto from "../dtos/updateProfile.dto"
+import UpdateProfileDto from "../dtos/user/updateProfile.dto"
 
 export default class UserRoute implements AppRoute {
     public path: string = '/user'
