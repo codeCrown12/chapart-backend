@@ -163,7 +163,7 @@ export default class AuthService {
         <p>Here's your one time token below</p>
         <b>${token}</b>`
         await emailService.sendEmail(sendOtpDto.email.toLowerCase(), "Verify email", message)
-        return { msg: "Token sent"}
+        return { msg: "Token sent" }
     }
 
 
@@ -198,7 +198,7 @@ export default class AuthService {
                 verification_pin: token
             }
         })
-        return { msg: "Token verified"}
+        return { msg: "Token verified" }
     }
 
 
@@ -223,7 +223,7 @@ export default class AuthService {
                 verification_pin: token
             }
         })
-        return { msg: "Password updated"}
+        return { msg: "Password updated" }
     }
 
 

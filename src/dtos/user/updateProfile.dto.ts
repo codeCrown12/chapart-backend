@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty } from "class-validator"
+import { IsString, IsNotEmpty, IsOptional } from "class-validator"
 
 export default class UpdateProfileDto {
 
@@ -15,9 +15,11 @@ export default class UpdateProfileDto {
     lastname: string
 
     @IsString()
+    @IsOptional()
     phone_number: string
 
     @IsString()
+    @IsOptional()
     bio: string
     
 }
