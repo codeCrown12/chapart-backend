@@ -32,11 +32,12 @@ export default class UserService {
             is_artist, 
             phone_number, 
             email_verified, 
-            date, 
-            exhibit, 
+            date,
             bookmarks, 
             profile_image,
-            bio
+            bio,
+            wallet_balance,
+            is_banned
         } = user
 
         return { user: {
@@ -48,10 +49,11 @@ export default class UserService {
             phone_number, 
             email_verified, 
             date, 
-            exhibit, 
             bookmarks, 
             profile_image,
-            bio
+            bio,
+            wallet_balance,
+            is_banned
         } }
     }
 
@@ -75,28 +77,33 @@ export default class UserService {
             phone_number, 
             email_verified, 
             date, 
-            exhibit, 
             bookmarks, 
             profile_image,
-            bio
+            bio,
+            wallet_balance,
+            is_banned
         } = user
-        return { user: {
-            email,
-            username, 
-            firstname, 
-            lastname, 
-            is_artist, 
-            phone_number, 
-            email_verified, 
-            date, 
-            exhibit, 
-            bookmarks, 
-            profile_image,
-            bio
-        } }
+        return { 
+            user: {
+                email,
+                username, 
+                firstname, 
+                lastname, 
+                is_artist, 
+                phone_number, 
+                email_verified, 
+                date,
+                bookmarks, 
+                profile_image,
+                bio,
+                wallet_balance,
+                is_banned
+            }
+        }
     }
 
-    public async bookmarkArt (id: string, bookmarkArtDto: BookmarkArtDto) {
+
+    public async addArtToBookmarks (id: string, bookmarkArtDto: BookmarkArtDto) {
         const art = await this.dbService.art.findFirst({
             where: {
                 slug: bookmarkArtDto.id
@@ -105,7 +112,15 @@ export default class UserService {
         if(!art) {
             throw new HttpException(StatusCodes.BAD_REQUEST, "Art not found")
         }
-        const user = await this.dbService.user.update({
+        const user = await this.dbService.user.findFirst({
+            where: {
+                id: id
+            }
+        })
+        if(user?.bookmarks.includes(bookmarkArtDto.id)) {
+            throw new HttpException(StatusCodes.BAD_REQUEST, "Art already added to bookmarks")
+        }
+        const updatedUser = await this.dbService.user.update({
             where: {
                 id: id
             },
@@ -115,11 +130,36 @@ export default class UserService {
                 }
             }
         })
+        if(!updatedUser) {
+            throw new HttpException(StatusCodes.BAD_REQUEST, "User not found")
+        }
+        const { bookmarks } = updatedUser
+        return { bookmarks }
+    }
+
+
+    public async removeArtFromBookmarks (id: string, bookmarkArtDto: BookmarkArtDto) {
+        const user = await this.dbService.user.findFirst({
+            where: {
+                id: id
+            }
+        })
         if(!user) {
             throw new HttpException(StatusCodes.BAD_REQUEST, "User not found")
         }
-        const { bookmarks } = user
+        const currentBookmarks = user.bookmarks
+        currentBookmarks.splice(currentBookmarks.indexOf(bookmarkArtDto.id), 1)
+        const updatedUser = await this.dbService.user.update({
+            where: {
+                id: id
+            },
+            data: {
+                bookmarks: currentBookmarks
+            }
+        })
+        const { bookmarks } = updatedUser
         return { bookmarks }
     }
+    
 
 }

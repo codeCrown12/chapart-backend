@@ -9,4 +9,5 @@ export default class VerifyOtpDto {
     @IsString()
     @IsNotEmpty()
     token: string
+    
 } 

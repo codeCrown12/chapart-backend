@@ -52,14 +52,13 @@ export default class AuthService {
             username, 
             firstname, 
             lastname, 
-            is_artist, 
             phone_number, 
             email_verified, 
             date, 
-            exhibit, 
             bookmarks, 
             profile_image,
-            bio
+            bio,
+            wallet_balance
         } = user
         const message : string = `
         <p>Welcome ${firstname.toUpperCase()}, </p>
@@ -71,14 +70,13 @@ export default class AuthService {
             username, 
             firstname, 
             lastname, 
-            is_artist, 
             phone_number, 
             email_verified, 
             date, 
-            exhibit, 
             bookmarks, 
             profile_image,
-            bio
+            bio,
+            wallet_balance
         } }
     }
 
@@ -94,14 +92,19 @@ export default class AuthService {
             throw new HttpException(StatusCodes.BAD_REQUEST, "Invalid credentials")
         }
 
-        if(user.is_banned) {
-            throw new HttpException(StatusCodes.BAD_REQUEST, "Access denied")
+        if(user.is_blocked) {
+            throw new HttpException(StatusCodes.BAD_REQUEST, "Access denied please contact support")
+        }
+
+        if(!user.email_verified) {
+            await this.sendOTP({ email: loginDto.email })
+            throw new HttpException(StatusCodes.BAD_REQUEST, "Email not verified")
         }
 
         const passwordIsValid = await this.verifyPassword(user.password, loginDto.password)
 
         if(!passwordIsValid) {
-            throw new HttpException(StatusCodes.BAD_GATEWAY, "Invalid credentials")
+            throw new HttpException(StatusCodes.BAD_REQUEST, "Invalid credentials")
         }
 
         const token = this.signJWT(user.id)
@@ -111,29 +114,27 @@ export default class AuthService {
             username, 
             firstname, 
             lastname, 
-            is_artist, 
             phone_number, 
             email_verified, 
-            date, 
-            exhibit, 
+            date,
             bookmarks, 
             profile_image,
-            bio
+            bio,
+            wallet_balance
         } = user
 
         const loggedInUser = {
             email,
             username, 
             firstname, 
-            lastname, 
-            is_artist, 
+            lastname,
             phone_number, 
             email_verified, 
-            date, 
-            exhibit, 
+            date,
             bookmarks, 
             profile_image,
-            bio
+            bio,
+            wallet_balance
         }
 
         return { user: loggedInUser, token }
@@ -177,27 +178,17 @@ export default class AuthService {
         if(!user) {
             throw new HttpException(StatusCodes.BAD_REQUEST, "Invalid token")
         }
-        const token = this.generateToken()
         if(!user.email_verified) {
             await this.dbService.user.update({
                 where: {
                     email: verifyEmailDto.email.toLowerCase()
                 },
                 data: {
-                    email_verified: true,
-                    verification_pin: token
+                    email_verified: true
                 }
             })
             return { msg: "Email verified" }
         }
-        await this.dbService.user.update({
-            where: {
-                email: verifyEmailDto.email.toLowerCase()
-            },
-            data: {
-                verification_pin: token
-            }
-        })
         return { msg: "Token verified" }
     }
 
@@ -260,6 +251,7 @@ export default class AuthService {
         }
     }
 
+    
     public generateToken(length: number = 6) {
         let chars = '0123456789';
         let token = '';

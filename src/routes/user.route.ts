@@ -11,7 +11,7 @@ export default class UserRoute implements AppRoute {
     public router: Router = Router()
     private controller: UserController = new UserController()
 
-    constructor(){
+    constructor() {
         this.initializeRoutes()
     }
 
@@ -31,10 +31,17 @@ export default class UserRoute implements AppRoute {
         )
 
         this.router.patch(
-            '/bookmark_art',
+            '/add_art_to_bookmarks',
             authMiddleware,
             dtoValidationMiddleware(BookmarkArtDto, "body"),
-            this.controller.bookmarkArt
+            this.controller.addArtToBookmarks
+        )
+
+        this.router.patch(
+            '/remove_art_from_bookmarks',
+            authMiddleware,
+            dtoValidationMiddleware(BookmarkArtDto, "body"),
+            this.controller.removeArtFromBookmarks
         )
 
     }

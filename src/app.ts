@@ -7,12 +7,14 @@ import database from "./database"
 import { logger } from './utils/logger'
 import { PORT } from "./config"
 import { StatusCodes } from "http-status-codes"
+import AuthRoute from "./routes/auth.route"
+import UserRoute from "./routes/user.route"
 
-export default class App  {
+class App  {
 
-  private app: Application
+  public app: Application
+  public database: typeof database
   private port: number | string
-  private database: typeof database
 
   constructor(routes: AppRoute[]) {
     this.app = express()
@@ -49,8 +51,7 @@ export default class App  {
       await this.database.connect()
       logger.info(`🛢️ [Database]: Database connected`)
     } catch (error) {
-      logger.error(`🛢️ [Database]: Database connection failed`)
-      console.log(error)
+      logger.error(`🛢️ [Database]: Database connection failed >>> ERROR: ${error}`)
     }
   }
 
@@ -59,3 +60,8 @@ export default class App  {
   }
 
 }
+
+export default new App([
+  new AuthRoute(),
+  new UserRoute()
+])

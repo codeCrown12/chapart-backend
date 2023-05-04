@@ -22,7 +22,4 @@ export default class SignUpDto {
     @IsNotEmpty()
     password: string
 
-    @IsBoolean()
-    is_artist: boolean
-
 }

@@ -25,11 +25,10 @@ model User {
   bookmarks String[]
   password String
   wallet_balance Int @default(0)
-  is_artist Boolean @default(false)
   art_works Art[]
   orders Order[]
   withdrawals Withdrawal[]
-  is_banned Boolean @default(false)
+  is_blocked Boolean @default(false)
   date DateTime @default(now())
 }
 
@@ -90,4 +89,10 @@ enum DeliveryStatus {
   DELIVERED
   IN_TRANSIT
   NOT_DELIVERED
+}
+
+enum OrderStatus {
+  COMPLETE
+  RETURNED
+  CANCELLED
 }
