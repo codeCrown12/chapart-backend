@@ -11,6 +11,7 @@ import emailService from "./email.service"
 import SendOtpDto from "../dtos/auth/sendOtp.dto"
 import VerifyOtpDto from "../dtos/auth/verifyOtp.dto"
 import ChangePasswordDto from "../dtos/auth/changePassword.dto"
+import SetAccountTypeDto from "../dtos/auth/setAccountType.dto"
 
 
 export default class AuthService {
@@ -58,7 +59,9 @@ export default class AuthService {
             bookmarks, 
             profile_image,
             bio,
-            wallet_balance
+            wallet_balance,
+            state,
+            city
         } = user
         const message : string = `
         <p>Welcome ${firstname.toUpperCase()}, </p>
@@ -76,8 +79,26 @@ export default class AuthService {
             bookmarks, 
             profile_image,
             bio,
-            wallet_balance
+            wallet_balance,
+            state,
+            city
         } }
+    }
+
+
+    public async setAccountType(setAccountTypeDto: SetAccountTypeDto) {
+        const user = await this.dbService.user.update({
+            where: {
+                email: setAccountTypeDto.email.toLowerCase()
+            },
+            data: {
+                is_artist: setAccountTypeDto.is_artist
+            }
+        })
+        if(!user) {
+            throw new HttpException(StatusCodes.BAD_REQUEST, "Invalid email")
+        }
+        return { msg: "User type set successfully" }
     }
 
 
@@ -120,7 +141,9 @@ export default class AuthService {
             bookmarks, 
             profile_image,
             bio,
-            wallet_balance
+            wallet_balance,
+            state,
+            city
         } = user
 
         const loggedInUser = {
@@ -134,7 +157,9 @@ export default class AuthService {
             bookmarks, 
             profile_image,
             bio,
-            wallet_balance
+            wallet_balance,
+            state,
+            city
         }
 
         return { user: loggedInUser, token }
@@ -187,9 +212,8 @@ export default class AuthService {
                     email_verified: true
                 }
             })
-            return { msg: "Email verified" }
         }
-        return { msg: "Token verified" }
+        return { msg: "Email verified" }
     }
 
 

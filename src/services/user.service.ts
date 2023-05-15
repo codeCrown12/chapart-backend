@@ -3,7 +3,7 @@ import database from "../database"
 import { StatusCodes } from "http-status-codes"
 import HttpException from "../utils/exception"
 import UpdateProfileDto from "../dtos/user/updateProfile.dto"
-import BookmarkArtDto from "../dtos/user/bookmarkArt.dto"
+import ArtworktDto from "../dtos/user/artwork.dto"
 
 export default class UserService {
     
@@ -37,7 +37,8 @@ export default class UserService {
             profile_image,
             bio,
             wallet_balance,
-            is_banned
+            state,
+            city
         } = user
 
         return { user: {
@@ -53,7 +54,8 @@ export default class UserService {
             profile_image,
             bio,
             wallet_balance,
-            is_banned
+            state,
+            city
         } }
     }
 
@@ -81,7 +83,8 @@ export default class UserService {
             profile_image,
             bio,
             wallet_balance,
-            is_banned
+            state,
+            city
         } = user
         return { 
             user: {
@@ -97,16 +100,17 @@ export default class UserService {
                 profile_image,
                 bio,
                 wallet_balance,
-                is_banned
+                state,
+                city
             }
         }
     }
 
 
-    public async addArtToBookmarks (id: string, bookmarkArtDto: BookmarkArtDto) {
+    public async addArtToBookmarks (id: string, artworkDto: ArtworktDto) {
         const art = await this.dbService.art.findFirst({
             where: {
-                slug: bookmarkArtDto.id
+                slug: artworkDto.id
             }
         })
         if(!art) {
@@ -117,7 +121,7 @@ export default class UserService {
                 id: id
             }
         })
-        if(user?.bookmarks.includes(bookmarkArtDto.id)) {
+        if(user?.bookmarks.includes(artworkDto.id)) {
             throw new HttpException(StatusCodes.BAD_REQUEST, "Art already added to bookmarks")
         }
         const updatedUser = await this.dbService.user.update({
@@ -126,7 +130,7 @@ export default class UserService {
             },
             data: {
                 bookmarks: {
-                    push: bookmarkArtDto.id
+                    push: artworkDto.id
                 }
             }
         })
@@ -138,7 +142,7 @@ export default class UserService {
     }
 
 
-    public async removeArtFromBookmarks (id: string, bookmarkArtDto: BookmarkArtDto) {
+    public async removeArtFromBookmarks (id: string, artworkDto: ArtworktDto) {
         const user = await this.dbService.user.findFirst({
             where: {
                 id: id
@@ -148,7 +152,7 @@ export default class UserService {
             throw new HttpException(StatusCodes.BAD_REQUEST, "User not found")
         }
         const currentBookmarks = user.bookmarks
-        currentBookmarks.splice(currentBookmarks.indexOf(bookmarkArtDto.id), 1)
+        currentBookmarks.splice(currentBookmarks.indexOf(artworkDto.id), 1)
         const updatedUser = await this.dbService.user.update({
             where: {
                 id: id
@@ -159,6 +163,75 @@ export default class UserService {
         })
         const { bookmarks } = updatedUser
         return { bookmarks }
+    }
+
+
+    public async addArtToExhibit(id: string, artworkDto: ArtworktDto) {
+        const art = await this.dbService.art.findFirst({
+            where: {
+                slug: artworkDto.id
+            }
+        })
+        if(!art) {
+            throw new HttpException(StatusCodes.BAD_REQUEST, "Art not found")
+        }
+        const user = await this.dbService.user.findFirst({
+            where: {
+                id: id
+            }
+        })
+        if(user?.exhibition.includes(artworkDto.id)) {
+            throw new HttpException(StatusCodes.BAD_REQUEST, "Art already added to exhibit")
+        }
+        const updatedUser = await this.dbService.user.update({
+            where: {
+                id: id
+            },
+            data: {
+                exhibition: {
+                    push: artworkDto.id
+                }
+            }
+        })
+        if(!updatedUser) {
+            throw new HttpException(StatusCodes.BAD_REQUEST, "User not found")
+        }
+        const { exhibition } = updatedUser
+        return { exhibition }
+    }
+
+
+    public async removeArtFromExhibit(id: string, artworkDto: ArtworktDto) {
+        const user = await this.dbService.user.findFirst({
+            where: {
+                id: id
+            }
+        })
+        if(!user) {
+            throw new HttpException(StatusCodes.BAD_REQUEST, "User not found")
+        }
+        const currentExhibit = user.exhibition
+        currentExhibit.splice(currentExhibit.indexOf(artworkDto.id), 1)
+        const updatedUser = await this.dbService.user.update({
+            where: {
+                id: id
+            },
+            data: {
+                exhibition: currentExhibit
+            }
+        })
+        const { bookmarks } = updatedUser
+        return { bookmarks }
+    }
+
+
+    public async followUser() {
+
+    }
+
+
+    public async unfollowUser() {
+
     }
     
 

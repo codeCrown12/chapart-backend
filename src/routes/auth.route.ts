@@ -7,6 +7,7 @@ import LoginDto from "../dtos/auth/login.dto"
 import VerifyOtpDto from "../dtos/auth/verifyOtp.dto"
 import SendOtpDto from "../dtos/auth/sendOtp.dto"
 import ChangePasswordDto from "../dtos/auth/changePassword.dto"
+import SetUserTypeDto from "../dtos/auth/setAccountType.dto"
 
 export default class AuthRoute implements AppRoute {
     public path: string = '/auth'
@@ -41,6 +42,12 @@ export default class AuthRoute implements AppRoute {
             '/verify_token',
             dtoValidationMiddleware(VerifyOtpDto, "body"),
             this.controller.verifyOtp
+        )
+
+        this.router.post(
+            '/set_account_type',
+            dtoValidationMiddleware(SetUserTypeDto, "body"),
+            this.controller.setAccountType
         )
 
         this.router.put(

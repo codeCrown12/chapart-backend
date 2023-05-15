@@ -20,15 +20,26 @@ model User {
   email_verified Boolean @default(false)
   username String @unique
   phone_number String?
-  bio String?
   profile_image String?
+  state String?
+  city String?
+  bio String?
   bookmarks String[]
+  exhibition String[]
   password String
   wallet_balance Int @default(0)
   art_works Art[]
-  orders Order[]
-  withdrawals Withdrawal[]
+  is_artist Boolean @default(false)
+  followers String[]
+  date DateTime @default(now())
   is_blocked Boolean @default(false)
+}
+
+model Category {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  slug String @unique @default(uuid())
+  name String
+  art_works Art[]
   date DateTime @default(now())
 }
 
@@ -37,7 +48,8 @@ model Art {
   slug String @unique @default(uuid())
   author_id String
   author User @relation(fields: [author_id], references: [slug])
-  category String
+  category_id String
+  category Category @relation(fields: [category_id], references: [slug])
   image_urls String[]
   price Int
   title String
@@ -45,54 +57,5 @@ model Art {
   specifications String[]
   is_signed Boolean @default(false)
   is_available_for_sale Boolean @default(false)
-  is_for_exhibition Boolean @default(false)
-  orders Order[]
   date DateTime @default(now())
-}
-
-model Order {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  slug String @unique @default(uuid())
-  user_id String
-  user User @relation(fields: [user_id], references: [slug])
-  item_id String
-  item Art @relation(fields: [item_id], references: [slug])
-  delivery_state String
-  delivery_city String
-  delivery_street_address String
-  payment_status PaymentStatus
-  delivery_status DeliveryStatus
-  date DateTime @default(now())
-}
-
-model Withdrawal {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  slug String @unique @default(uuid())
-  user User @relation(fields: [user_id], references: [slug])
-  user_id String
-  amount Int
-  account_name String
-  account_number String
-  bank_name String
-  bank_code String
-  status PaymentStatus 
-  date DateTime @default(now())
-}
-
-enum PaymentStatus {
-  PENDING
-  SUCCESS
-  CANCELLED
-}
-
-enum DeliveryStatus {
-  DELIVERED
-  IN_TRANSIT
-  NOT_DELIVERED
-}
-
-enum OrderStatus {
-  COMPLETE
-  RETURNED
-  CANCELLED
 }
