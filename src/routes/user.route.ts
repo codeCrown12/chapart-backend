@@ -4,7 +4,7 @@ import { AppRoute } from "../interfaces/route.interface"
 import dtoValidationMiddleware from "../middlewares/validation.middleware"
 import authMiddleware from "../middlewares/auth.middleware"
 import UpdateProfileDto from "../dtos/user/updateProfile.dto"
-import BookmarkArtDto from "../dtos/user/artWork.dto"
+import ArtworktDto from "../dtos/user/artWork.dto"
 
 export default class UserRoute implements AppRoute {
     
@@ -34,14 +34,14 @@ export default class UserRoute implements AppRoute {
         this.router.patch(
             '/add_art_to_bookmarks',
             authMiddleware,
-            dtoValidationMiddleware(BookmarkArtDto, "body"),
+            dtoValidationMiddleware(ArtworktDto, "body"),
             this.controller.addArtToBookmarks
         )
 
         this.router.patch(
             '/remove_art_from_bookmarks',
             authMiddleware,
-            dtoValidationMiddleware(BookmarkArtDto, "body"),
+            dtoValidationMiddleware(ArtworktDto, "body"),
             this.controller.removeArtFromBookmarks
         )
 
