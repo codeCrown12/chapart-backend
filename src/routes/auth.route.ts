@@ -10,6 +10,7 @@ import ChangePasswordDto from "../dtos/auth/changePassword.dto"
 import SetUserTypeDto from "../dtos/auth/setAccountType.dto"
 
 export default class AuthRoute implements AppRoute {
+    
     public path: string = '/auth'
     public router: Router = Router()
     private controller: AuthController = new AuthController()

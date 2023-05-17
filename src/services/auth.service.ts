@@ -28,12 +28,22 @@ export default class AuthService {
 
         const emailExists = await this.dbService.user.findFirst({
             where: {
-                email: signUpDto.email
+                email: signUpDto.email.toLowerCase()
+            }
+        })
+
+        const usernameExists = await this.dbService.user.findFirst({
+            where: {
+                username: signUpDto.username.toLowerCase()
             }
         })
 
         if(emailExists) {
             throw new HttpException(StatusCodes.BAD_REQUEST, "Email already exists")
+        }
+
+        if(usernameExists) {
+            throw new HttpException(StatusCodes.BAD_REQUEST, "Username already exists")
         }
         
         const hashedPassword = await this.hashPassword(signUpDto.password)

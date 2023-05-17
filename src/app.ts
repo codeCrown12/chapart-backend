@@ -5,10 +5,12 @@ import errorMiddleware from './middlewares/error.middleware'
 import morganMiddleware from './middlewares/morgan.middleware'
 import database from "./database"
 import { logger } from './utils/logger'
-import { PORT } from "./config"
+import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET, PORT } from "./config"
+import { v2 as cloudinary } from "cloudinary"
 import { StatusCodes } from "http-status-codes"
 import AuthRoute from "./routes/auth.route"
 import UserRoute from "./routes/user.route"
+import ArtRoute from "./routes/art.route"
 
 class App  {
 
@@ -23,6 +25,7 @@ class App  {
     this.initializeMiddlewares()
     this.initializeRoutes(routes)
     this.initializeDatabase()
+    this.initializeCloudinary()
     this.initializeErrorHandling()
   }
 
@@ -55,6 +58,15 @@ class App  {
     }
   }
 
+  private async initializeCloudinary() {
+    cloudinary.config({
+        cloud_name: CLOUDINARY_CLOUD_NAME,
+        api_key: CLOUDINARY_API_KEY,
+        api_secret: CLOUDINARY_API_SECRET
+    })
+    logger.info(`🖼️  [cloudinary]: Cloudinary configured`)
+  }
+
   private initializeErrorHandling() {
     this.app.use(errorMiddleware)
   }
@@ -63,5 +75,6 @@ class App  {
 
 export default new App([
   new AuthRoute(),
-  new UserRoute()
+  new UserRoute(),
+  new ArtRoute()
 ])
