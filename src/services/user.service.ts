@@ -3,17 +3,15 @@ import database from "../database"
 import { StatusCodes } from "http-status-codes"
 import HttpException from "../utils/exception"
 import UpdateProfileDto from "../dtos/user/updateProfile.dto"
-import ArtworktDto from "../dtos/user/artwork.dto"
+import ArtworktDto from "../dtos/user/artWork.dto"
 
 export default class UserService {
     
     private dbService: PrismaClient
 
-
     constructor() {
         this.dbService = database.getClient()
     }
-
 
     public async getProfile (id: string) {
         const user = await this.dbService.user.findFirst({
@@ -29,16 +27,13 @@ export default class UserService {
             username, 
             firstname, 
             lastname, 
-            is_artist, 
-            phone_number, 
+            is_artist,
             email_verified, 
             date,
             bookmarks, 
             profile_image,
             bio,
-            wallet_balance,
-            state,
-            city
+            country
         } = user
 
         return { user: {
@@ -46,16 +41,13 @@ export default class UserService {
             username, 
             firstname, 
             lastname, 
-            is_artist, 
-            phone_number, 
+            is_artist,
             email_verified, 
             date, 
             bookmarks, 
             profile_image,
             bio,
-            wallet_balance,
-            state,
-            city
+            country
         } }
     }
 
@@ -75,16 +67,13 @@ export default class UserService {
             username, 
             firstname, 
             lastname, 
-            is_artist, 
-            phone_number, 
+            is_artist,
             email_verified, 
             date, 
             bookmarks, 
             profile_image,
             bio,
-            wallet_balance,
-            state,
-            city
+            country
         } = user
         return { 
             user: {
@@ -93,19 +82,15 @@ export default class UserService {
                 firstname, 
                 lastname, 
                 is_artist, 
-                phone_number, 
                 email_verified, 
                 date,
                 bookmarks, 
                 profile_image,
                 bio,
-                wallet_balance,
-                state,
-                city
+                country
             }
         }
     }
-
 
     public async addArtToBookmarks (id: string, artworkDto: ArtworktDto) {
         const art = await this.dbService.art.findFirst({
@@ -141,7 +126,6 @@ export default class UserService {
         return { bookmarks }
     }
 
-
     public async removeArtFromBookmarks (id: string, artworkDto: ArtworktDto) {
         const user = await this.dbService.user.findFirst({
             where: {
@@ -164,66 +148,6 @@ export default class UserService {
         const { bookmarks } = updatedUser
         return { bookmarks }
     }
-
-
-    public async addArtToExhibit(id: string, artworkDto: ArtworktDto) {
-        const art = await this.dbService.art.findFirst({
-            where: {
-                slug: artworkDto.id
-            }
-        })
-        if(!art) {
-            throw new HttpException(StatusCodes.BAD_REQUEST, "Art not found")
-        }
-        const user = await this.dbService.user.findFirst({
-            where: {
-                id: id
-            }
-        })
-        if(user?.exhibition.includes(artworkDto.id)) {
-            throw new HttpException(StatusCodes.BAD_REQUEST, "Art already added to exhibit")
-        }
-        const updatedUser = await this.dbService.user.update({
-            where: {
-                id: id
-            },
-            data: {
-                exhibition: {
-                    push: artworkDto.id
-                }
-            }
-        })
-        if(!updatedUser) {
-            throw new HttpException(StatusCodes.BAD_REQUEST, "User not found")
-        }
-        const { exhibition } = updatedUser
-        return { exhibition }
-    }
-
-
-    public async removeArtFromExhibit(id: string, artworkDto: ArtworktDto) {
-        const user = await this.dbService.user.findFirst({
-            where: {
-                id: id
-            }
-        })
-        if(!user) {
-            throw new HttpException(StatusCodes.BAD_REQUEST, "User not found")
-        }
-        const currentExhibit = user.exhibition
-        currentExhibit.splice(currentExhibit.indexOf(artworkDto.id), 1)
-        const updatedUser = await this.dbService.user.update({
-            where: {
-                id: id
-            },
-            data: {
-                exhibition: currentExhibit
-            }
-        })
-        const { bookmarks } = updatedUser
-        return { bookmarks }
-    }
-
 
     public async followUser() {
 

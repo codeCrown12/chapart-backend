@@ -19,15 +19,11 @@ model User {
   verification_pin String
   email_verified Boolean @default(false)
   username String @unique
-  phone_number String?
   profile_image String?
-  state String?
-  city String?
+  country String?
   bio String?
   bookmarks String[]
-  exhibition String[]
   password String
-  wallet_balance Int @default(0)
   art_works Art[]
   is_artist Boolean @default(false)
   followers String[]
@@ -50,12 +46,11 @@ model Art {
   author User @relation(fields: [author_id], references: [slug])
   category_id String
   category Category @relation(fields: [category_id], references: [slug])
-  image_urls String[]
-  price Int
+  images String[]
   title String
   description String
   specifications String[]
   is_signed Boolean @default(false)
-  is_available_for_sale Boolean @default(false)
+  is_for_exhibition Boolean @default(true)
   date DateTime @default(now())
 }

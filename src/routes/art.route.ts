@@ -4,6 +4,8 @@ import { AppRoute } from "../interfaces/route.interface"
 import dtoValidationMiddleware from "../middlewares/validation.middleware"
 import authMiddleware from "../middlewares/auth.middleware"
 import multer from "../utils/multer"
+import AddArtWorkDto from "../dtos/art/addArtWork.dto"
+import UpdateArtWorkDto from "../dtos/art/updateArtWork.dto"
 
 export default class ArtRoute implements AppRoute {
 
@@ -22,6 +24,26 @@ export default class ArtRoute implements AppRoute {
             authMiddleware,
             multer.array('image', 6),
             this.controller.uploadDocuments
+        )
+
+        this.router.post(
+            '',
+            authMiddleware,
+            dtoValidationMiddleware(AddArtWorkDto, "body"),
+            this.controller.addArtWork
+        )
+
+        this.router.put(
+            '/:id',
+            authMiddleware,
+            dtoValidationMiddleware(UpdateArtWorkDto, "body"),
+            this.controller.updateArtWork
+        )
+
+        this.router.delete(
+            '/:id',
+            authMiddleware,
+            this.controller.deleteArtWork
         )
 
     }

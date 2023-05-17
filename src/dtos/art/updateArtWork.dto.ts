@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty, IsBoolean, IsArray, IsNumber } from "class-validator"
 
-export default class AddArtWorkDto {
+export default class UpdateArtWorkDto {
 
     @IsString()
     @IsNotEmpty()
@@ -13,9 +13,6 @@ export default class AddArtWorkDto {
     @IsString()
     @IsNotEmpty()
     category_id: string
-
-    @IsArray()
-    images: string[]
 
     @IsArray()
     specifications: string[]

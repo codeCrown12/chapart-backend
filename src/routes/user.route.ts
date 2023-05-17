@@ -4,7 +4,7 @@ import { AppRoute } from "../interfaces/route.interface"
 import dtoValidationMiddleware from "../middlewares/validation.middleware"
 import authMiddleware from "../middlewares/auth.middleware"
 import UpdateProfileDto from "../dtos/user/updateProfile.dto"
-import BookmarkArtDto from "../dtos/user/artwork.dto"
+import BookmarkArtDto from "../dtos/user/artWork.dto"
 
 export default class UserRoute implements AppRoute {
     

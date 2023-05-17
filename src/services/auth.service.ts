@@ -63,15 +63,12 @@ export default class AuthService {
             username, 
             firstname, 
             lastname, 
-            phone_number, 
             email_verified, 
             date, 
             bookmarks, 
             profile_image,
             bio,
-            wallet_balance,
-            state,
-            city
+            country
         } = user
         const message : string = `
         <p>Welcome ${firstname.toUpperCase()}, </p>
@@ -83,15 +80,12 @@ export default class AuthService {
             username, 
             firstname, 
             lastname, 
-            phone_number, 
             email_verified, 
             date, 
             bookmarks, 
             profile_image,
             bio,
-            wallet_balance,
-            state,
-            city
+            country
         } }
     }
 
@@ -144,16 +138,13 @@ export default class AuthService {
             email,
             username, 
             firstname, 
-            lastname, 
-            phone_number, 
+            lastname,
             email_verified, 
             date,
             bookmarks, 
             profile_image,
             bio,
-            wallet_balance,
-            state,
-            city
+            country
         } = user
 
         const loggedInUser = {
@@ -161,15 +152,12 @@ export default class AuthService {
             username, 
             firstname, 
             lastname,
-            phone_number, 
             email_verified, 
             date,
             bookmarks, 
             profile_image,
             bio,
-            wallet_balance,
-            state,
-            city
+            country
         }
 
         return { user: loggedInUser, token }

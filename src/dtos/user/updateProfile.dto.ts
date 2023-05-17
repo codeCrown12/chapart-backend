@@ -16,7 +16,7 @@ export default class UpdateProfileDto {
 
     @IsString()
     @IsOptional()
-    phone_number: string
+    country: string
 
     @IsString()
     @IsOptional()

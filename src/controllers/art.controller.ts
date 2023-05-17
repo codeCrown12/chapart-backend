@@ -15,4 +15,31 @@ export default class ArtController {
         }
     }
 
+    public addArtWork = async (request: Request, response: Response, next: NextFunction) => {
+        try {
+            const res = await this.artService.addArtWork(request.user?.id as string, request.body)
+            response.status(StatusCodes.OK).send({status: 'ok', error: null, data: res})
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    public updateArtWork = async (request: Request, response: Response, next: NextFunction) => {
+        try {
+            const res = await this.artService.updateArtWork(request.params.id as string, request.body)
+            response.status(StatusCodes.OK).send({status: 'ok', error: null, data: res})
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    public deleteArtWork = async (request: Request, response: Response, next: NextFunction) => {
+        try {
+            const res = await this.artService.deleteArtWork(request.params.id as string)
+            response.status(StatusCodes.OK).send({status: 'ok', error: null, data: res})
+        } catch (error) {
+            next(error)
+        }
+    }
+
 }
