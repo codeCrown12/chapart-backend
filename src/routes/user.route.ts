@@ -24,7 +24,7 @@ export default class UserRoute implements AppRoute {
             this.controller.getProfile
         )
 
-        this.router.patch(
+        this.router.put(
             '/update',
             authMiddleware,
             dtoValidationMiddleware(UpdateProfileDto, "body"),
