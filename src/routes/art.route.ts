@@ -26,6 +26,11 @@ export default class ArtRoute implements AppRoute {
             this.controller.getArtWorks
         )
 
+        this.router.get(
+            '/get/:id',
+            this.controller.getSingleArtWork
+        )
+
         this.router.post(
             '/upload',
             authMiddleware,

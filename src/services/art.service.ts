@@ -146,5 +146,17 @@ export default class ArtService {
         }
         return { results, cursor, limit }
     }
+
+    public async getSingleArtWork (id: string) {
+        const result = await this.dbService.art.findFirst({
+            where: {
+                slug: id
+            }
+        })
+        if(!result) {
+            throw new HttpException(StatusCodes.BAD_REQUEST, "Art not found")
+        }
+        return { result }
+    }
     
 }
