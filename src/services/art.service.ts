@@ -134,10 +134,7 @@ export default class ArtService {
             }
         }
         const results = await this.dbService.art.findMany(query)
-        let cursor = null
-        if(results.length == limit) {
-            cursor = results[limit - 1].id
-        }
+        let cursor = results[limit - 1]?.id ?? null
         return { results, cursor, limit }
     }
 
@@ -203,10 +200,7 @@ export default class ArtService {
             }
         }
         const results = await this.dbService.art.findMany(query)
-        let cursor = null
-        if(results.length == limit) {
-            cursor = results[limit - 1].id
-        }
+        let cursor = results[limit - 1]?.id ?? null
         return { results, cursor, limit }
     }
     
