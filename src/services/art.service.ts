@@ -6,6 +6,7 @@ import MediaService from "./media.service"
 import AddArtWorkDto from "../dtos/art/addArtWork.dto"
 import UpdateArtWorkDto from "../dtos/art/updateArtWork.dto"
 import GetArtWorkDto from "../dtos/art/getArtWork.dto"
+import { QueryFilter } from "../interfaces/filter.interface"
 
 export default class ArtService {
 
@@ -88,14 +89,7 @@ export default class ArtService {
 
     public async getArtWorks (filterParams: GetArtWorkDto) {
         const limit = filterParams.limit ? parseInt(filterParams.limit) : 50
-        type Query = {
-            take: number,
-            where?: any,
-            cursor?: any,
-            skip?: number,
-            orderBy: any
-        }
-        let query: Query = {
+        let query: QueryFilter = {
             take: limit,
             orderBy: {
                 id: 'desc',
@@ -157,6 +151,63 @@ export default class ArtService {
             throw new HttpException(StatusCodes.BAD_REQUEST, "Art not found")
         }
         return { result }
+    }
+
+    public async getUserArtWorks (id: string, filterParams: GetArtWorkDto) {
+        const limit = filterParams.limit ? parseInt(filterParams.limit) : 50
+        let query: QueryFilter = {
+            take: limit,
+            orderBy: {
+                id: 'desc',
+            },
+            where: {
+                author_id: id
+            }
+        }
+        if(filterParams.cursor) {
+            query = {
+                ...query,
+                skip: 1,
+                cursor: {
+                    id: filterParams.cursor,
+                }
+            }
+        }
+        if(filterParams.category) {
+            query = {
+                ...query,
+                where: {
+                    category_id: filterParams.category
+                }
+            }
+        }
+        if(filterParams.search) {
+            query = {
+                ...query,
+                where: {
+                    OR: [
+                        {
+                            title: {
+                                contains: filterParams.search,
+                                mode: 'insensitive'
+                            }
+                        },
+                        {
+                            description: {
+                                contains: filterParams.search,
+                                mode: 'insensitive'
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+        const results = await this.dbService.art.findMany(query)
+        let cursor = null
+        if(results.length == limit) {
+            cursor = results[limit - 1].id
+        }
+        return { results, cursor, limit }
     }
     
 }

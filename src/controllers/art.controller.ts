@@ -60,4 +60,13 @@ export default class ArtController {
         }
     }
 
+    public getUserArtWorks = async (request: Request, response: Response, next: NextFunction) => {
+        try {
+            const res = await this.artService.getUserArtWorks(request.user?.id as string, request.query)
+            response.status(StatusCodes.OK).send({status: 'ok', error: null, data: res})
+        } catch (error) {
+            next(error)
+        }
+    }
+
 }

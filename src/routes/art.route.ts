@@ -27,6 +27,12 @@ export default class ArtRoute implements AppRoute {
         )
 
         this.router.get(
+            '/get_user_artworks',
+            dtoValidationMiddleware(GetArtWorkDto, "query"),
+            this.controller.getUserArtWorks
+        )
+
+        this.router.get(
             '/get/:id',
             this.controller.getSingleArtWork
         )
