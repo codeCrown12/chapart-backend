@@ -21,15 +21,14 @@ export default class ArtRoute implements AppRoute {
     private initializeRoutes() {
 
         this.router.get(
-            '/get',
-            dtoValidationMiddleware(GetArtWorkDto, "query"),
-            this.controller.getArtWorks
+            '/categories',
+            this.controller.getCategories
         )
 
         this.router.get(
-            '/get_user_artworks',
+            '/get',
             dtoValidationMiddleware(GetArtWorkDto, "query"),
-            this.controller.getUserArtWorks
+            this.controller.getArtWorks
         )
 
         this.router.get(

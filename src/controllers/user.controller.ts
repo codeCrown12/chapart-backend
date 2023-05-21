@@ -42,4 +42,13 @@ export default class UserController {
         }
     }
 
+    public getArtWorks = async (request: Request, response: Response, next: NextFunction) => {
+        try {
+            const res = await this.userService.getArtWorks(request.user?.id as string, request.query)
+            response.status(StatusCodes.OK).send({status: 'ok', error: null, data: res})
+        } catch (error) {
+            next(error)
+        }
+    }
+
 }

@@ -4,5 +4,6 @@ export interface QueryFilter {
     where?: any,
     cursor?: any,
     skip?: number,
-    orderBy: any
+    orderBy: any,
+    include: any
 }
