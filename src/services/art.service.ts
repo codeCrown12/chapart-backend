@@ -226,9 +226,12 @@ export default class ArtService {
             include: {
                 author: {
                     select: {
+                        id: true,
                         slug: true,
                         firstname: true,
-                        lastname: true
+                        lastname: true,
+                        username: true,
+                        profile_image: true
                     }
                 }
             }

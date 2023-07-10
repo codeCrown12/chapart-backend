@@ -12,6 +12,7 @@ import AuthRoute from "./routes/auth.route"
 import UserRoute from "./routes/user.route"
 import ArtRoute from "./routes/art.route"
 import ChatRoute from "./routes/chat.route"
+import { Server } from "http"
 
 class App  {
 
@@ -30,8 +31,8 @@ class App  {
     this.initializeErrorHandling()
   }
 
-  public listen(): void {
-    this.app.listen(this.port, () => {
+  public listen(): Server {
+    return this.app.listen(this.port, () => {
       logger.info(`⚡️[server]: Server is running @ http://localhost:${this.port}`)
     })
   }
