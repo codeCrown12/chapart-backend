@@ -24,33 +24,36 @@ export default class UserService {
         if(!user) {
             throw new HttpException(StatusCodes.BAD_REQUEST, "User not found")
         }
-        const { 
+        const {
+            slug,
             email,
             username, 
             firstname, 
-            lastname, 
-            is_artist,
+            lastname,
             email_verified, 
-            date,
+            created_at,
+            updated_at,
             bookmarks, 
             profile_image,
             bio,
             country
         } = user
 
-        return { user: {
+        return {
+            id,
+            slug,
             email,
             username, 
             firstname, 
-            lastname, 
-            is_artist,
+            lastname,
             email_verified, 
-            date, 
+            created_at,
+            updated_at, 
             bookmarks, 
             profile_image,
             bio,
-            country
-        } }
+            country 
+        }
     }
 
 
@@ -64,33 +67,34 @@ export default class UserService {
         if(!user) {
             throw new HttpException(StatusCodes.BAD_REQUEST, "User not found")
         }
-        const { 
+        const {
+            slug,
             email,
             username, 
             firstname, 
-            lastname, 
-            is_artist,
+            lastname,
             email_verified, 
-            date, 
+            created_at,
+            updated_at, 
             bookmarks, 
             profile_image,
             bio,
             country
         } = user
         return { 
-            user: {
-                email,
-                username, 
-                firstname, 
-                lastname, 
-                is_artist, 
-                email_verified, 
-                date,
-                bookmarks, 
-                profile_image,
-                bio,
-                country
-            }
+            id,
+            slug,
+            email,
+            username, 
+            firstname, 
+            lastname,
+            email_verified, 
+            created_at,
+            updated_at,
+            bookmarks, 
+            profile_image,
+            bio,
+            country
         }
     }
 
@@ -125,32 +129,33 @@ export default class UserService {
             throw new HttpException(StatusCodes.BAD_REQUEST, "User not found")
         }
         const { 
+            slug,
             email,
             username, 
             firstname, 
-            lastname, 
-            is_artist,
+            lastname,
             email_verified, 
-            date, 
+            created_at,
+            updated_at, 
             bookmarks, 
             profile_image,
             bio,
             country
         } = updatedUser
         return { 
-            user: {
-                email,
-                username, 
-                firstname, 
-                lastname, 
-                is_artist, 
-                email_verified, 
-                date,
-                bookmarks, 
-                profile_image,
-                bio,
-                country
-            }
+            id,
+            slug,
+            email,
+            username, 
+            firstname, 
+            lastname, 
+            email_verified, 
+            created_at,
+            updated_at,
+            bookmarks, 
+            profile_image,
+            bio,
+            country
         }
     }
 
@@ -177,91 +182,36 @@ export default class UserService {
             throw new HttpException(StatusCodes.BAD_REQUEST, "User not found")
         }
         const { 
+            slug,
             email,
             username, 
             firstname, 
-            lastname, 
-            is_artist,
+            lastname,
             email_verified, 
-            date, 
+            created_at,
+            updated_at, 
             bookmarks, 
             profile_image,
             bio,
             country
         } = updatedUser
         return { 
-            user: {
-                email,
-                username, 
-                firstname, 
-                lastname, 
-                is_artist, 
-                email_verified, 
-                date,
-                bookmarks, 
-                profile_image,
-                bio,
-                country
-            }
+            id,
+            slug,
+            email,
+            username, 
+            firstname, 
+            lastname, 
+            email_verified, 
+            created_at,
+            updated_at,
+            bookmarks, 
+            profile_image,
+            bio,
+            country
         }
     }
-
-    public async getArtWorks (id: string, filterParams: GetArtWorkDto) {
-        const limit = filterParams.limit ? parseInt(filterParams.limit) : 50
-        let query: QueryFilter = {
-            include: {
-                author: true
-            },
-            take: limit,
-            orderBy: {
-                id: 'desc',
-            },
-            where: {
-                author_id: id
-            }
-        }
-        if(filterParams.cursor) {
-            query = {
-                ...query,
-                skip: 1,
-                cursor: {
-                    id: filterParams.cursor,
-                }
-            }
-        }
-        if(filterParams.category) {
-            query = {
-                ...query,
-                where: {
-                    category_id: filterParams.category
-                }
-            }
-        }
-        if(filterParams.search) {
-            query = {
-                ...query,
-                where: {
-                    OR: [
-                        {
-                            title: {
-                                contains: filterParams.search,
-                                mode: 'insensitive'
-                            }
-                        },
-                        {
-                            description: {
-                                contains: filterParams.search,
-                                mode: 'insensitive'
-                            }
-                        }
-                    ]
-                }
-            }
-        }
-        const results = await this.dbService.art.findMany(query)
-        let cursor = results[limit - 1]?.id ?? null
-        return { results, cursor, limit }
-    }
+    
 
     public async followUser() {
 

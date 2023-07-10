@@ -23,7 +23,7 @@ class EmailService {
 
     public async sendEmail (to: string | string[], subject: string, message: string) {
         const mailOptions: Options = {
-            from: `"Eonace" <${MAIL_USERNAME}>`,
+            from: `"Pixhibit" <${MAIL_USERNAME}>`,
             to: to,
             subject: subject,
             html: message

@@ -25,10 +25,13 @@ model User {
   bookmarks String[]
   password String
   art_works Art[]
-  is_artist Boolean @default(false)
   followers String[]
-  date DateTime @default(now())
   is_blocked Boolean @default(false)
+  messages Message[]
+  room_ids String[] @db.ObjectId
+  rooms Room[] @relation(fields: [room_ids], references: [id])
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model Category {
@@ -36,7 +39,8 @@ model Category {
   slug String @unique @default(uuid())
   name String
   art_works Art[]
-  date DateTime @default(now())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model Art {
@@ -51,6 +55,28 @@ model Art {
   description String
   specifications String[]
   is_signed Boolean @default(false)
-  is_for_exhibition Boolean @default(true)
-  date DateTime @default(now())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Room {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  slug String @unique @default(uuid())
+  user_ids String[] @db.ObjectId
+  users User[] @relation(fields: [user_ids], references: [id])
+  messages Message[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Message {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  slug String @unique @default(uuid())
+  message String
+  sender_id String
+  sender User @relation(fields: [sender_id], references: [slug])
+  room_id String
+  room Room @relation(fields: [room_id], references: [slug])
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }

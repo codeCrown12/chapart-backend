@@ -47,10 +47,10 @@ export default class UserRoute implements AppRoute {
         )
 
         this.router.get(
-            '/get_art_works',
+            '/my_art_works',
             authMiddleware,
             dtoValidationMiddleware(GetArtWorkDto, "query"),
-            this.controller.getArtWorks
+            this.controller.getMyArtWorks
         )
 
     }

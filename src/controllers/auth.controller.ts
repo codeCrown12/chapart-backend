@@ -42,15 +42,6 @@ export default class AuthController {
         }
     }
 
-    public setAccountType = async (request: Request, response: Response, next: NextFunction) => {
-        try {
-            const res = await this.authService.setAccountType(request.body)
-            response.status(StatusCodes.OK).send({status: 'ok', error: null, data: res})
-        } catch (error) {
-            next(error)
-        }
-    }
-
     public changePassword = async (request: Request, response: Response, next: NextFunction) => {
         try {
             const res = await this.authService.changePassword(request.body)

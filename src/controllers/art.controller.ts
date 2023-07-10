@@ -6,7 +6,7 @@ export default class ArtController {
 
     public artService: ArtService = new ArtService()
 
-    public uploadDocuments = async (request: Request, response: Response, next: NextFunction) => {
+    public uploadFiles = async (request: Request, response: Response, next: NextFunction) => {
         try {
             const res = await this.artService.uploadFiles(request.files as Express.Multer.File[])
             response.status(StatusCodes.OK).send({status: 'ok', error: null, data: res})
@@ -60,9 +60,27 @@ export default class ArtController {
         }
     }
 
+    public addCategory = async (request: Request, response: Response, next: NextFunction) => {
+        try {
+            const res = await this.artService.addCategory(request.body)
+            response.status(StatusCodes.OK).send({status: 'ok', error: null, data: res})
+        } catch (error) {
+            next(error)
+        }
+    }
+
     public getCategories = async (request: Request, response: Response, next: NextFunction) => {
         try {
             const res = await this.artService.getCategories()
+            response.status(StatusCodes.OK).send({status: 'ok', error: null, data: res})
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    public getUserArtWorks = async (request: Request, response: Response, next: NextFunction) => {
+        try {
+            const res = await this.artService.getUserArtWorks(request.params.id as string, request.query)
             response.status(StatusCodes.OK).send({status: 'ok', error: null, data: res})
         } catch (error) {
             next(error)

@@ -58,13 +58,16 @@ export default class AuthService {
                 verification_pin: token
             }
         })
-        const { 
+        const {
+            id,
+            slug,
             email,
             username, 
             firstname, 
             lastname, 
             email_verified, 
-            date, 
+            created_at,
+            updated_at, 
             bookmarks, 
             profile_image,
             bio,
@@ -75,34 +78,21 @@ export default class AuthService {
         <p>Please verify your account with the otp below</p>
         <b>${token}</b>`
         await emailService.sendEmail(signUpDto.email.toLowerCase(), "Verify email", message)
-        return { user: {
+        return {
+            id,
+            slug,
             email,
             username, 
             firstname, 
             lastname, 
             email_verified, 
-            date, 
+            created_at,
+            updated_at, 
             bookmarks, 
             profile_image,
             bio,
-            country
-        } }
-    }
-
-
-    public async setAccountType(setAccountTypeDto: SetAccountTypeDto) {
-        const user = await this.dbService.user.update({
-            where: {
-                email: setAccountTypeDto.email.toLowerCase()
-            },
-            data: {
-                is_artist: setAccountTypeDto.is_artist
-            }
-        })
-        if(!user) {
-            throw new HttpException(StatusCodes.BAD_REQUEST, "Invalid email")
+            country 
         }
-        return { msg: "User type set successfully" }
     }
 
 
@@ -134,13 +124,16 @@ export default class AuthService {
 
         const token = this.signJWT(user.id)
 
-        const { 
+        const {
+            id,
+            slug,
             email,
             username, 
             firstname, 
             lastname,
             email_verified, 
-            date,
+            created_at,
+            updated_at,
             bookmarks, 
             profile_image,
             bio,
@@ -148,12 +141,15 @@ export default class AuthService {
         } = user
 
         const loggedInUser = {
+            id,
+            slug,
             email,
             username, 
             firstname, 
             lastname,
             email_verified, 
-            date,
+            created_at,
+            updated_at,
             bookmarks, 
             profile_image,
             bio,

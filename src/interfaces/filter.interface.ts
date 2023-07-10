@@ -1,9 +1,9 @@
 
 export interface QueryFilter {
-    take: number,
+    take?: number,
     where?: any,
     cursor?: any,
     skip?: number,
-    orderBy: any,
-    include: any
+    orderBy?: any,
+    include?: any
 }

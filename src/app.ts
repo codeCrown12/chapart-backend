@@ -11,6 +11,7 @@ import { StatusCodes } from "http-status-codes"
 import AuthRoute from "./routes/auth.route"
 import UserRoute from "./routes/user.route"
 import ArtRoute from "./routes/art.route"
+import ChatRoute from "./routes/chat.route"
 
 class App  {
 
@@ -76,5 +77,6 @@ class App  {
 export default new App([
   new AuthRoute(),
   new UserRoute(),
-  new ArtRoute()
+  new ArtRoute(),
+  new ChatRoute()
 ])

@@ -7,6 +7,7 @@ import AddArtWorkDto from "../dtos/art/addArtWork.dto"
 import UpdateArtWorkDto from "../dtos/art/updateArtWork.dto"
 import GetArtWorkDto from "../dtos/art/getArtWork.dto"
 import { QueryFilter } from "../interfaces/filter.interface"
+import AddCategoryDto from "../dtos/art/addCategory.dto"
 
 export default class ArtService {
 
@@ -51,10 +52,11 @@ export default class ArtService {
                 description: artWork.description,
                 images: artWork.images,
                 specifications: artWork.specifications,
-                category_id: artWork.category_id
+                category_id: artWork.category_id,
+                is_signed: artWork.is_signed
             }
         })
-        return { art: newArtWork }
+        return newArtWork
     }
 
     public async updateArtWork (id: string, artWork: UpdateArtWorkDto) {
@@ -72,7 +74,7 @@ export default class ArtService {
             },
             data: artWork
         })
-        return { art: updatedArtWork }
+        return updatedArtWork
     }
 
     public async deleteArtWork (id: string) {
@@ -84,14 +86,23 @@ export default class ArtService {
         if(!deletedArtWork) {
             throw new HttpException(StatusCodes.BAD_REQUEST, "Art not found")
         }
-        return { art: deletedArtWork }
+        return deletedArtWork
     }
 
     public async getArtWorks (filterParams: GetArtWorkDto) {
         const limit = filterParams.limit ? parseInt(filterParams.limit) : 50
         let query: QueryFilter = {
             include: {
-                author: true
+                author: {
+                    select: {
+                        id: true,
+                        slug: true,
+                        firstname: true,
+                        lastname: true,
+                        username: true,
+                        profile_image: true
+                    }
+                }
             },
             take: limit,
             orderBy: {
@@ -141,21 +152,113 @@ export default class ArtService {
         return { results, cursor, limit }
     }
 
+    public async getUserArtWorks (id: string, filterParams: GetArtWorkDto) {
+        const limit = filterParams.limit ? parseInt(filterParams.limit) : 50
+        let query: QueryFilter = {
+            include: {
+                author: {
+                    select: {
+                        id: true,
+                        slug: true,
+                        firstname: true,
+                        lastname: true,
+                        username: true,
+                        profile_image: true
+                    }
+                }
+            },
+            take: limit,
+            orderBy: {
+                id: 'desc',
+            },
+            where: {
+                author_id: id
+            }
+        }
+        if(filterParams.cursor) {
+            query = {
+                ...query,
+                skip: 1,
+                cursor: {
+                    id: filterParams.cursor,
+                }
+            }
+        }
+        if(filterParams.category) {
+            query = {
+                ...query,
+                where: {
+                    category_id: filterParams.category
+                }
+            }
+        }
+        if(filterParams.search) {
+            query = {
+                ...query,
+                where: {
+                    OR: [
+                        {
+                            title: {
+                                contains: filterParams.search,
+                                mode: 'insensitive'
+                            }
+                        },
+                        {
+                            description: {
+                                contains: filterParams.search,
+                                mode: 'insensitive'
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+        const results = await this.dbService.art.findMany(query)
+        let cursor = results[limit - 1]?.id ?? null
+        return { results, cursor, limit }
+    }
+
     public async getSingleArtWork (id: string) {
         const result = await this.dbService.art.findFirst({
             where: {
                 slug: id
+            },
+            include: {
+                author: {
+                    select: {
+                        slug: true,
+                        firstname: true,
+                        lastname: true
+                    }
+                }
             }
         })
         if(!result) {
             throw new HttpException(StatusCodes.BAD_REQUEST, "Art not found")
         }
-        return { result }
+        return result
     }
 
     public async getCategories() {
         const results = await this.dbService.category.findMany()
-        return { results }
+        return results
+    }
+
+    public async addCategory(addCategoryDto: AddCategoryDto) {
+        const category = await this.dbService.category.findFirst({
+            where: {
+                name: addCategoryDto.name
+            }
+        })
+        if(category) {
+            throw new HttpException(StatusCodes.BAD_REQUEST, "Category already exists")
+        }
+        const newCategory = await this.dbService.category.create({
+            data: {
+                name: addCategoryDto.name
+            }
+        })
+        return newCategory
     }
     
 }

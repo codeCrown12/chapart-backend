@@ -7,6 +7,7 @@ import multer from "../utils/multer"
 import AddArtWorkDto from "../dtos/art/addArtWork.dto"
 import UpdateArtWorkDto from "../dtos/art/updateArtWork.dto"
 import GetArtWorkDto from "../dtos/art/getArtWork.dto"
+import AddCategoryDto from "../dtos/art/addCategory.dto"
 
 export default class ArtRoute implements AppRoute {
 
@@ -25,6 +26,12 @@ export default class ArtRoute implements AppRoute {
             this.controller.getCategories
         )
 
+        this.router.post(
+            '/categories/add',
+            dtoValidationMiddleware(AddCategoryDto, "body"),
+            this.controller.addCategory
+        )
+
         this.router.get(
             '/get',
             dtoValidationMiddleware(GetArtWorkDto, "query"),
@@ -36,11 +43,16 @@ export default class ArtRoute implements AppRoute {
             this.controller.getSingleArtWork
         )
 
+        this.router.get(
+            '/user/:id',
+            this.controller.getUserArtWorks
+        )
+
         this.router.post(
             '/upload',
             authMiddleware,
             multer.array('image', 6),
-            this.controller.uploadDocuments
+            this.controller.uploadFiles
         )
 
         this.router.post(

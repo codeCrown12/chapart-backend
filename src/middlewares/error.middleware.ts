@@ -16,7 +16,7 @@ const errorMiddleware = (
     logger.error(
       `[${req.method}] ${req.path}  >> StatusCode:: ${status}, Message:: ${message}`
     );
-    res.status(status).send({status: 'error', error: message, data: null});
+    res.status(status).send({message});
   } catch (error) {
     logger.error(`[${req.method}] ${req.path}  >> StatusCode:: 500, Message:: unexpected error occurred`)
   }
